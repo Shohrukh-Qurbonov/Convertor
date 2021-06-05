@@ -1,0 +1,60 @@
+﻿@{
+    ViewData["Title"] = "Convertor";
+}
+
+<div class="currency_converter_container">
+    <div class="card col-md-3">
+        <div class="card-body">
+            <div class="form-group">
+                <label>Все курсы валют на дату:</label>
+                <div class="form-group">
+                    <input class="form-control" name="date" type="date" id="datepicker" />
+                </div>
+            </div>
+            <button class="btn btn-primary btn-block" id="showCurrencyButton">Показать</button>
+        </div>
+    </div>
+</div>
+<table class="table">
+    <thead class="table-striped table-bordered table-dark">
+        <tr>
+            <th scope="col">Код</th>
+            <th scope="col">Код валюты</th>
+            <th scope="col">Валюта</th>
+            <th scope="col">Кол-во</th>
+            <th scope="col">Курс</th>
+        </tr>
+    </thead>
+    <tbody id="currencyTableBody">
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        const showCurrencyButtonEl = document.getElementById('showCurrencyButton');
+        const currencyTableBodyContainer = document.getElementById('currencyTableBody');
+        const datepickerEl = document.getElementById('datepicker');
+
+        showCurrencyButtonEl.addEventListener('click', () => {
+            console.log(datepickerEl.value);
+            $.ajax({
+                dataType: "json",
+                url: `/Home/GetValcurs?date=${datepickerEl.value}`,
+                error: (e => console.log(e)),
+                success: (response => {
+                    currencyTableBodyContainer.innerHTML = "";
+                    response.valute.forEach(item => {
+                        const row = `<tr>
+                                            <th scope="row">${item.id}</th>
+                                            <td>${item.charCode}</td>
+                                            <td>${item.name}</td>
+                                            <td>${item.nominal}</td>
+                                            <td>${item.value}</td>
+                                        </tr>`;
+                        currencyTableBodyContainer.insertAdjacentHTML('beforeend', row);
+                    });
+                })
+            });
+        });
+    </script>
+}
